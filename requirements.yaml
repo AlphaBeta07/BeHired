@@ -1,0 +1,21 @@
+packages:
+  "framer-motion": "Required for Tinder-style swipe animations and physics-based dragging"
+  "react-hook-form": "Form state management"
+  "@hookform/resolvers": "Zod integration for forms"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+  "zod": "Schema validation for forms"
+  "lucide-react": "Beautiful consistent iconography"
+
+images:
+  - path: "artifacts/behired/public/images/hero-bg.png"
+    description: "Vibrant abstract energetic gradient mesh in deep violet, bright pink, and electric blue, perfect for a modern startup landing page background"
+    aspect_ratio: "16:9"
+  - path: "artifacts/behired/public/images/logo.png"
+    description: "Modern bold energetic app logo for 'BeHired' featuring a stylized spark or heart integrated with a briefcase, vibrant gradients"
+    aspect_ratio: "1:1"
+
+notes:
+  - Auth relies on HTTP-only cookies; generated customFetch handles credentials.
+  - Using generated Orval hooks from @workspace/api-client-react for all API calls.
+  - Orval outputs types to `api.schemas.ts`.
