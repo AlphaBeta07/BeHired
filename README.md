@@ -4,6 +4,20 @@
   <img src="public/images/Gemini_Generated_Image_kfiw8akfiw8akfiw.png" width="120" height="120" alt="BeHired Logo">
   <h3>Match. Connect. Get Hired.</h3>
   <p>A modern, swipe-based job matching platform for the next generation of talent and employers.</p>
+  <p>
+    <a href="https://behired-ivory.vercel.app/" target="_blank">
+      <img src="https://img.shields.io/badge/Live_Demo-View_Site-e5405e?style=for-the-badge&logo=vercel" alt="Live Demo">
+    </a>
+  </p>
+</div>
+
+---
+
+## 📷 Screenshots
+
+<div align="center">
+  <h3>Landing Page (Dark Mode)</h3>
+  <img src="public/images/image.png" width="800" alt="BeHired Landing Page">
 </div>
 
 ---
