@@ -3,6 +3,7 @@ import { useParams, Link } from "wouter";
 import { useGetJobApplicants, useEmployerSwipe, useGetJobById } from "@/lib/api/hooks";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
+import { ApplicantDetailSheet } from "@/components/ApplicantDetailSheet";
 import { Button } from "@/components/ui/button";
 import { Heart, X as XIcon, Loader2, Sparkles, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +17,7 @@ export default function ApplicantsView() {
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matchData, setMatchData] = useState<any>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const swipeMutation = useEmployerSwipe();
 
@@ -89,6 +91,7 @@ export default function ApplicantsView() {
                     data={applicant}
                     type="applicant"
                     onSwipe={handleSwipe}
+                    onExpand={() => setShowDetails(true)}
                     active={isTop}
                     zIndex={idx}
                   />
@@ -126,6 +129,14 @@ export default function ApplicantsView() {
         image2={matchData?.applicant?.avatar}
         name1={matchData?.job?.company || "Company"}
         name2={matchData?.applicant?.name || "Applicant"}
+      />
+
+      <ApplicantDetailSheet
+        applicant={applicants ? applicants[currentIndex] : null}
+        onClose={() => setShowDetails(false)}
+        onLike={() => { setShowDetails(false); handleSwipe("like"); }}
+        onPass={() => { setShowDetails(false); handleSwipe("pass"); }}
+        isPending={swipeMutation.isPending}
       />
     </div>
   );

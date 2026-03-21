@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import FileStore from "session-file-store";
 import router from "./routes/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,13 +15,25 @@ const app: Express = express();
 
 const SESSION_SECRET = process.env.SESSION_SECRET || "behired-secret-key-change-in-production";
 
+// Persist sessions to disk so they survive server restarts in development
+const FileStoreSession = FileStore(session);
+const sessionsDir = path.resolve(__dirname, "../.sessions");
+if (!fs.existsSync(sessionsDir)) fs.mkdirSync(sessionsDir, { recursive: true });
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use(
   session({
+    store: new FileStoreSession({ 
+      path: sessionsDir, 
+      ttl: 7 * 24 * 60 * 60, 
+      retries: 0,
+      reapInterval: -1,   // Disable reaper to avoid Windows EPERM rename errors
+      logFn: () => {} 
+    }),
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,

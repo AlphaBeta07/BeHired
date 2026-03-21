@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Heart, Briefcase, User, LayoutDashboard, LogOut, Flame, PlusSquare } from "lucide-react";
+import { Heart, Briefcase, User, LayoutDashboard, LogOut, PlusSquare, Users, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -14,7 +14,11 @@ export function Navbar() {
       <header className="fixed top-0 left-0 right-0 z-50 glass">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Flame className="text-primary w-7 h-7 fill-primary" />
+            <img
+              src="/images/Gemini_Generated_Image_kfiw8akfiw8akfiw.png"
+              alt="BeHired Logo"
+              className="w-8 h-8 object-contain"
+            />
             <span className="font-bold text-xl tracking-tight text-white">BeHired</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -41,7 +45,11 @@ export function Navbar() {
       <header className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
         <div className="flex justify-center pt-4">
           <Link href={isJobseeker ? "/swipe" : "/my-listings"} className="pointer-events-auto flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
-            <Flame className="text-primary w-6 h-6 fill-primary" />
+            <img
+              src="/images/Gemini_Generated_Image_kfiw8akfiw8akfiw.png"
+              alt="BeHired Logo"
+              className="w-6 h-6 object-contain"
+            />
             <span className="font-bold text-base tracking-tight text-white">BeHired</span>
           </Link>
         </div>
@@ -53,6 +61,7 @@ export function Navbar() {
           <>
             <NavItem href="/swipe" icon={<Briefcase className="w-5 h-5" />} label="Jobs" active={location === "/swipe" || location === "/"} />
             <NavItem href="/matches" icon={<Heart className="w-5 h-5" />} label="Matches" active={location === "/matches"} />
+            <NavItem href="/history" icon={<Clock className="w-5 h-5" />} label="History" active={location === "/history"} />
           </>
         )}
 
@@ -60,7 +69,9 @@ export function Navbar() {
           <>
             <NavItem href="/my-listings" icon={<LayoutDashboard className="w-5 h-5" />} label="Jobs" active={location === "/my-listings" || location === "/"} />
             <NavItem href="/post-job" icon={<PlusSquare className="w-5 h-5" />} label="Post" active={location === "/post-job"} />
+            <NavItem href="/talent" icon={<Users className="w-5 h-5" />} label="Talent" active={location === "/talent"} />
             <NavItem href="/matches" icon={<Heart className="w-5 h-5" />} label="Matches" active={location === "/matches"} />
+            <NavItem href="/history" icon={<Clock className="w-5 h-5" />} label="History" active={location === "/history"} />
           </>
         )}
 

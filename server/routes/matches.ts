@@ -14,12 +14,51 @@ router.get("/matches", async (req: Request, res: Response): Promise<void> => {
   if (!userId) return;
 
   try {
-    const matchesData = await rtdbQuery("matches", "user_id", userId);
-    const matches = matchesData
-      ? Object.entries(matchesData).map(([id, val]: any) => ({ id, ...val }))
-      : [];
-    res.json(matches);
+    const role = (req.session as any).userRole; // jobseeker or employer
+
+    const allMatchesData = await rtdbGet("matches") || {};
+    const allMatchesArray = Object.entries(allMatchesData).map(([id, val]: any) => ({ id, ...val }));
+    
+    // We only want 'accepted' matches (meaning both parties swiped right)
+    let myMatches = allMatchesArray.filter(m => m.status === "accepted");
+
+    if (role === "employer") {
+      // Find matches where the employer_id on the job matches userId
+      const jobsData = await rtdbQuery("jobs", "employer_id", userId) || {};
+      const myJobIds = new Set(Object.keys(jobsData));
+      myMatches = myMatches.filter(m => myJobIds.has(m.job_id));
+    } else {
+      // Jobseeker
+      myMatches = myMatches.filter(m => m.user_id === userId);
+    }
+
+    const detailedMatches = [];
+    for (const match of myMatches) {
+      const job = await rtdbGet(`jobs/${match.job_id}`);
+      const applicant = await rtdbGet(`profiles/${match.user_id}`);
+      
+      if (job && applicant) {
+        detailedMatches.push({
+          id: match.id,
+          jobId: match.job_id,
+          jobTitle: job.title || "Job",
+          company: job.company || "Company",
+          companyLogo: job.company_logo || job.companyLogo || "",
+          applicantId: match.user_id,
+          applicantName: applicant.name || "Applicant",
+          applicantAvatar: applicant.avatar || "",
+          matchedAt: match.updated_at || match.created_at || new Date().toISOString(),
+          status: match.status
+        });
+      }
+    }
+
+    // Sort by most recent match time
+    detailedMatches.sort((a, b) => new Date(b.matchedAt).getTime() - new Date(a.matchedAt).getTime());
+
+    res.json(detailedMatches);
   } catch (error: any) {
+    console.error("[get matches error]", error);
     res.status(500).json({ error: "Failed to fetch matches" });
   }
 });

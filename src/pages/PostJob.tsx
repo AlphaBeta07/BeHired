@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -43,6 +44,13 @@ export default function PostJob() {
     },
   });
 
+  // Sync company from profile if it loads late
+  useEffect(() => {
+    if (profile?.companyName && !form.getValues("company")) {
+      form.setValue("company", profile.companyName);
+    }
+  }, [profile, form]);
+
   const createJobMutation = useCreateJob({
     mutation: {
       onSuccess: () => {
@@ -67,6 +75,14 @@ export default function PostJob() {
     });
   };
 
+  const onInvalid = (errors: any) => {
+    toast({ 
+      title: "Validation Error", 
+      description: "Please check the form for missing or invalid fields.", 
+      variant: "destructive" 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background pt-24 pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,7 +99,7 @@ export default function PostJob() {
             <p className="text-white/80 font-medium mt-1">Create a job or internship and start swiping on candidates.</p>
           </div>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="p-8 space-y-8">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="title">Job Title</Label>
@@ -94,6 +110,7 @@ export default function PostJob() {
               <div className="space-y-2">
                 <Label htmlFor="company">Company Name</Label>
                 <Input id="company" {...form.register("company")} />
+                {form.formState.errors.company && <p className="text-sm text-destructive">{form.formState.errors.company.message}</p>}
               </div>
             </div>
 
@@ -101,6 +118,7 @@ export default function PostJob() {
               <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <Input id="location" placeholder="e.g. San Francisco, CA" {...form.register("location")} />
+                {form.formState.errors.location && <p className="text-sm text-destructive">{form.formState.errors.location.message}</p>}
               </div>
 
               <div className="space-y-2">
@@ -108,7 +126,7 @@ export default function PostJob() {
                 <select 
                   id="type"
                   {...form.register("type")}
-                  className="flex h-14 w-full rounded-xl border-2 border-border bg-white px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:border-primary"
+                  className="flex h-14 w-full rounded-xl border-2 border-border bg-card text-foreground px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:border-primary"
                 >
                   <option value="job">Full-time Job</option>
                   <option value="internship">Internship</option>

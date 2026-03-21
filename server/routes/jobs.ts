@@ -49,6 +49,17 @@ router.get("/jobs/my", async (req: Request, res: Response): Promise<void> => {
   try {
     const myJobsData = await rtdbQuery("jobs", "employer_id", userId);
     const jobs = myJobsData ? Object.entries(myJobsData).map(([id, val]: any) => ({ id, ...val })) : [];
+    
+    // Fetch pending applicant counts
+    const allMatchesData = await rtdbGet("matches") || {};
+    const allMatchesArray = Object.entries(allMatchesData).map(([id, val]: any) => ({ id, ...val }));
+
+    for (const job of jobs) {
+      // Count everyone who swiped right on this job, regardless of if the employer already accepted/rejected them
+      const totalApplicants = allMatchesArray.filter(m => m.job_id === job.id);
+      job.applicantCount = totalApplicants.length;
+    }
+
     jobs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     res.json(jobs);
   } catch (error: any) {

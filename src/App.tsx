@@ -17,6 +17,8 @@ import Profile from "@/pages/Profile";
 import EmployerDashboard from "@/pages/EmployerDashboard";
 import PostJob from "@/pages/PostJob";
 import ApplicantsView from "@/pages/ApplicantsView";
+import EmployerTalentView from "@/pages/EmployerTalentView";
+import HistoryPage from "@/pages/HistoryPage";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -26,17 +28,19 @@ function ProtectedRoute({ component: Component, allowedRole }: { component: any,
   const { isAuthenticated, isLoading, user } = useAuth();
   const [, setLocation] = useLocation();
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setLocation("/login");
+    } else if (!isLoading && isAuthenticated && allowedRole && user?.role !== allowedRole) {
+      setLocation(user?.role === "jobseeker" ? "/swipe" : "/my-listings");
+    }
+  }, [isLoading, isAuthenticated, allowedRole, user, setLocation]);
+
   if (isLoading) {
     return <div className="min-h-screen bg-background" />;
   }
 
-  if (!isAuthenticated) {
-    setLocation("/login");
-    return null;
-  }
-
-  if (allowedRole && user?.role !== allowedRole) {
-    setLocation(user?.role === "jobseeker" ? "/swipe" : "/my-listings");
+  if (!isAuthenticated || (allowedRole && user?.role !== allowedRole)) {
     return null;
   }
 
@@ -50,7 +54,11 @@ function MatchListener() {
   const [newMatch, setNewMatch] = useState<any>(null);
 
   const { data: matches } = useGetMatches({
-    query: { refetchInterval: 5000, enabled: isAuthenticated && isJobseeker }
+    query: { 
+      queryKey: ['matches'], 
+      refetchInterval: 5000, 
+      enabled: isAuthenticated && isJobseeker 
+    }
   });
 
   useEffect(() => {
@@ -102,6 +110,9 @@ function Router() {
         <Route path="/profile">
           {() => <ProtectedRoute component={Profile} />}
         </Route>
+        <Route path="/history">
+          {() => <ProtectedRoute component={HistoryPage} />}
+        </Route>
 
         {/* Protected - Job Seeker Only */}
         <Route path="/swipe">
@@ -117,6 +128,9 @@ function Router() {
         </Route>
         <Route path="/applicants/:jobId">
           {() => <ProtectedRoute component={ApplicantsView} allowedRole="employer" />}
+        </Route>
+        <Route path="/talent">
+          {() => <ProtectedRoute component={EmployerTalentView} allowedRole="employer" />}
         </Route>
 
         {/* 404 */}

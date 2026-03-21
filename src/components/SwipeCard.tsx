@@ -54,17 +54,28 @@ export function SwipeCard({ data, type, onSwipe, onExpand, active, zIndex }: Swi
     >
       <div className="w-full max-w-[340px] h-[560px] rounded-[32px] shadow-2xl overflow-hidden flex flex-col relative group cursor-grab bg-slate-900 border-none select-none">
         
-        {/* Full Bleed Background Image or Gradient */}
         <div className="absolute inset-0">
           {(isJob ? job.companyLogo : applicant.avatar) ? (
-            <img src={isJob ? job.companyLogo! : applicant.avatar!} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-tr from-primary to-accent flex flex-col items-center justify-center opacity-90">
-              <span className="text-[120px] text-white/40 font-black drop-shadow-xl">
-                {(isJob ? job.company : applicant.name).charAt(0).toUpperCase()}
-              </span>
-            </div>
-          )}
+            <img 
+              src={isJob ? job.companyLogo! : applicant.avatar!} 
+              alt="Profile" 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // On broken image, hide the img and show the fallback gradient
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
+          ) : null}
+          <div 
+            className="w-full h-full bg-gradient-to-tr from-primary to-accent flex-col items-center justify-center opacity-90"
+            style={{ display: (isJob ? job.companyLogo : applicant.avatar) ? "none" : "flex" }}
+          >
+            <span className="text-[120px] text-white/40 font-black drop-shadow-xl">
+              {(isJob ? job.company : applicant.name).charAt(0).toUpperCase()}
+            </span>
+          </div>
         </div>
 
         {/* Dark gradient overlay at bottom */}

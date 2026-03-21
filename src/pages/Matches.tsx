@@ -1,11 +1,13 @@
 import { useGetMatches } from "@/lib/api/hooks";
 import { Link } from "wouter";
 import { formatRelativeTime } from "@/lib/utils";
-import { MessageCircle, Heart, MapPin, Calendar } from "lucide-react";
+import { MessageCircle, Heart, MapPin, Calendar, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Matches() {
   const { data: matches, isLoading } = useGetMatches();
+  const { isEmployer, user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background pt-14 pb-32">
@@ -13,7 +15,9 @@ export default function Matches() {
         {/* Header */}
         <div className="mb-8 pt-4">
           <h1 className="text-3xl font-black text-white tracking-tight mb-1">Your Matches</h1>
-          <p className="text-white/50 text-sm">Companies that swiped right on you too.</p>
+          <p className="text-white/50 text-sm">
+            {isEmployer ? "Jobseekers who matched with your listings." : "Companies that swiped right on you too."}
+          </p>
         </div>
 
         {isLoading ? (
@@ -32,10 +36,12 @@ export default function Matches() {
               <Heart className="w-9 h-9 text-primary" />
             </div>
             <h2 className="text-2xl font-black text-white mb-2">No matches yet</h2>
-            <p className="text-white/50 text-sm mb-8 max-w-[220px]">Keep swiping to find your next big opportunity.</p>
-            <Link href="/swipe">
+            <p className="text-white/50 text-sm mb-8 max-w-[220px]">
+              {isEmployer ? "Keep reviewing applicants to find your perfect hire." : "Keep swiping to find your next big opportunity."}
+            </p>
+            <Link href={isEmployer ? "/my-listings" : "/swipe"}>
               <button className="px-8 py-3 rounded-full font-bold text-white text-sm bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/30 hover:opacity-90 transition-all hover:scale-105 active:scale-95">
-                Go Swiping
+                {isEmployer ? "View Listings" : "Go Swiping"}
               </button>
             </Link>
           </motion.div>
@@ -51,25 +57,36 @@ export default function Matches() {
               >
                 {/* Avatar */}
                 <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
-                  {match.companyLogo ? (
-                    <img src={match.companyLogo} alt={match.company} className="w-full h-full object-cover" />
+                  {(isEmployer ? match.applicantAvatar : match.companyLogo) ? (
+                    <img 
+                      src={isEmployer ? match.applicantAvatar : match.companyLogo} 
+                      alt={isEmployer ? match.applicantName : match.company} 
+                      className="w-full h-full object-cover" 
+                    />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-black text-xl">
-                      {match.company.charAt(0).toUpperCase()}
+                      {isEmployer 
+                        ? match.applicantName?.charAt(0).toUpperCase() || "A"
+                        : match.company?.charAt(0).toUpperCase() || "C"}
                     </div>
                   )}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-white text-base leading-tight truncate">{match.jobTitle}</h3>
-                  <p className="text-primary font-semibold text-sm truncate">{match.company}</p>
-                  <div className="flex items-center gap-3 mt-1">
+                  <h3 className="font-bold text-white text-base leading-tight truncate">
+                    {isEmployer ? match.applicantName : match.jobTitle}
+                  </h3>
+                  <p className="text-primary font-semibold text-sm truncate flex items-center gap-1.5 mt-0.5">
+                    {isEmployer ? <Briefcase className="w-3.5 h-3.5" /> : null}
+                    {isEmployer ? `Applied for: ${match.jobTitle}` : match.company}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1.5">
                     <span className="text-white/30 text-xs flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {formatRelativeTime(match.matchedAt)}
                     </span>
-                    <span className="text-success text-xs font-bold bg-success/10 px-2 py-0.5 rounded-full">
+                    <span className="text-success text-xs font-bold bg-success/10 px-2 flex items-center rounded-full">
                       ✓ Matched
                     </span>
                   </div>
@@ -77,7 +94,7 @@ export default function Matches() {
 
                 {/* Message button */}
                 <a
-                  href={`mailto:hello@${match.company.toLowerCase().replace(/\s/g, '')}.com`}
+                  href={`mailto:${isEmployer ? 'hello@' + match.applicantName?.toLowerCase().replace(/\s/g, '') + '.com' : 'hello@' + match.company?.toLowerCase().replace(/\s/g, '') + '.com'}`}
                   className="w-11 h-11 rounded-full bg-primary/15 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all flex-shrink-0 group-hover:scale-110"
                   onClick={e => e.stopPropagation()}
                 >

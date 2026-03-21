@@ -85,8 +85,11 @@ export default function EmployerDashboard() {
 
                     {/* Applicants CTA */}
                     <div className="flex items-center gap-2 text-primary flex-shrink-0">
-                      <Users className="w-4 h-4" />
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <div className="flex items-center gap-1.5 font-bold bg-primary/10 px-3 py-1.5 rounded-full">
+                        <Users className="w-4 h-4" />
+                        <span>{(job as any).applicantCount || 0}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform opacity-50" />
                     </div>
                   </div>
                 </Link>
