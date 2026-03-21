@@ -5,6 +5,8 @@
     "target": "ES2022",
     "module": "ESNext",
     "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
     "jsx": "preserve",
     "lib": ["esnext", "dom", "dom.iterable"],
     "resolveJsonModule": true,
