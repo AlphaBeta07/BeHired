@@ -5,7 +5,7 @@
   <h3>Match. Connect. Get Hired.</h3>
   <p>A modern, swipe-based job matching platform for the next generation of talent and employers.</p>
   <p>
-    <a href="https://behired-ivory.vercel.app/" target="_blank">
+    <a href="https://behired-v1.vercel.app/" target="_blank">
       <img src="https://img.shields.io/badge/Live_Demo-View_Site-e5405e?style=for-the-badge&logo=vercel" alt="Live Demo">
     </a>
   </p>
