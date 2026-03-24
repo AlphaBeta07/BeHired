@@ -12,13 +12,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app: Express = express();
+app.set("trust proxy", 1);
 
 const SESSION_SECRET = process.env.SESSION_SECRET || "behired-secret-key-change-in-production";
 
 // Persist sessions to disk so they survive server restarts in development
 const FileStoreSession = FileStore(session);
-const sessionsDir = path.resolve(__dirname, "../.sessions");
-if (!fs.existsSync(sessionsDir)) fs.mkdirSync(sessionsDir, { recursive: true });
+const isVercel = process.env.VERCEL || process.env.NODE_ENV === "production";
+const sessionsDir = isVercel ? "/tmp/.sessions" : path.resolve(__dirname, "../.sessions");
+
+try {
+  if (!fs.existsSync(sessionsDir)) fs.mkdirSync(sessionsDir, { recursive: true });
+} catch (e) {
+  console.warn("Could not create sessions directory:", e);
+}
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
@@ -37,7 +44,7 @@ app.use(
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 },
+    cookie: { secure: process.env.NODE_ENV === "production", httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 },
   })
 );
 

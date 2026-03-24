@@ -39,6 +39,9 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    watch: {
+      ignored: ["**/.sessions/**"],
+    },
   },
   preview: {
     port,
